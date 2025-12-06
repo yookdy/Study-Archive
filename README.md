@@ -2,7 +2,7 @@
 
 # 외부 라이브러리 목록
 - pandas
-- metplotlb
+- metplotlib
 - tkinter
 - folium
 - selenium
