@@ -1,0 +1,101 @@
+EmployeeID,Name,Age,City,Department,Salary
+1,Michael Smith,58,Tokyo,Engineering,92907
+2,Michael Miller,62,Paris,Marketing,60525
+3,Richard Jones,51,Gwangju,IT,53874
+4,William Lopez,54,Ulsan,Marketing,78112
+5,Susan Gonzalez,41,Busan,Operations,119460
+1,Elizabeth Williams,60,Incheon,Marketing,119976
+2,Susan Brown,49,Chicago,Marketing,40407
+3,James Anderson,29,Los Angeles,Finance,50892
+4,James Smith,64,Los Angeles,Marketing,32844
+5,Linda Miller,21,Seoul,Sales,91802
+1,Michael Brown,54,Busan,IT,40088
+2,Robert Garcia,21,Ulsan,Engineering,98223
+3,Michael Garcia,24,Daejeon,Marketing,90905
+4,William Brown,21,London,Finance,84529
+5,Robert Brown,57,Busan,R&D,46389
+1,Robert Garcia,24,Busan,Operations,111277
+2,Robert Anderson,21,Suwon,Operations,45965
+3,David Smith,26,Ulsan,HR,55247
+4,Susan Jones,48,London,Sales,89154
+5,Jessica Brown,22,New York,Finance,35837
+1,Richard Lopez,34,Paris,HR,41554
+2,Susan Johnson,35,Berlin,Finance,100397
+3,Jessica Johnson,28,Berlin,R&D,86736
+4,Jennifer Smith,31,Suwon,R&D,102220
+5,James Jones,29,Paris,HR,99895
+1,Susan Anderson,63,Incheon,HR,31526
+2,Susan Brown,47,Paris,Marketing,45197
+3,Patricia Davis,38,Paris,R&D,43400
+4,Barbara Jones,32,Gwangju,Sales,111252
+5,John Smith,36,Paris,Operations,42092
+1,Joseph Jones,51,Los Angeles,Operations,96389
+2,Robert Garcia,50,New York,Sales,43625
+3,Jessica Brown,59,Ulsan,Operations,115596
+4,James Anderson,22,Ulsan,Operations,97964
+5,Michael Hernandez,40,New York,Sales,101635
+1,Susan Anderson,35,Paris,Marketing,110456
+2,Joseph Rodriguez,62,Los Angeles,R&D,43709
+3,James Hernandez,41,Chicago,Sales,77331
+4,John Rodriguez,49,Ulsan,Operations,39923
+5,John Brown,36,Berlin,IT,37050
+1,William Jones,25,Seoul,HR,32266
+2,Robert Rodriguez,51,Incheon,IT,45293
+3,Michael Gonzalez,64,London,Sales,52581
+4,Linda Jones,23,Seoul,R&D,94823
+5,Linda Rodriguez,47,New York,Sales,30645
+1,Michael Garcia,47,Busan,HR,89171
+2,David Miller,37,Daejeon,Sales,94439
+3,James Rodriguez,32,Daejeon,HR,106446
+4,Susan Martinez,43,London,Sales,56119
+5,Robert Lopez,24,Ulsan,R&D,111202
+1,Jennifer Williams,57,Chicago,Finance,115860
+2,Susan Lopez,41,Berlin,Sales,115820
+3,Susan Davis,43,New York,HR,108650
+4,William Brown,35,New York,HR,91193
+5,John Williams,61,Busan,Engineering,33138
+1,Jennifer Williams,36,Daegu,Finance,63933
+2,Joseph Garcia,29,Tokyo,HR,58222
+3,James Wilson,33,Ulsan,Operations,78200
+4,Michael Hernandez,27,Suwon,R&D,78396
+5,Linda Anderson,43,New York,R&D,102571
+1,Elizabeth Rodriguez,49,Chicago,Marketing,79944
+2,James Lopez,53,Chicago,Marketing,40991
+3,John Garcia,54,Daejeon,Operations,115153
+4,Jennifer Johnson,24,Gwangju,Engineering,71496
+5,Richard Johnson,42,Daejeon,Operations,59466
+1,Linda Brown,40,Paris,Engineering,65934
+2,Robert Miller,60,Seoul,IT,93352
+3,John Lopez,28,Busan,R&D,100973
+4,Linda Hernandez,52,London,HR,83625
+5,John Johnson,50,London,Sales,96454
+1,Robert Miller,52,Daegu,R&D,109352
+2,John Wilson,27,Los Angeles,Operations,99586
+3,Jessica Anderson,61,Los Angeles,Engineering,64196
+4,William Lopez,48,Los Angeles,Operations,104352
+5,Patricia Davis,60,Daejeon,HR,68725
+1,Jessica Hernandez,63,Paris,IT,70873
+2,John Smith,52,New York,Marketing,52412
+3,Joseph Davis,57,London,Engineering,85690
+4,Susan Rodriguez,40,Ulsan,Marketing,35859
+5,Mary Johnson,24,Suwon,Sales,50024
+1,Michael Rodriguez,30,Ulsan,R&D,97712
+2,Linda Johnson,42,Gwangju,IT,105531
+3,Linda Miller,27,New York,Marketing,35741
+4,Jennifer Wilson,41,Incheon,R&D,86869
+5,Joseph Hernandez,62,New York,Finance,89141
+1,Jennifer Gonzalez,45,New York,IT,66144
+2,Barbara Wilson,64,Daejeon,Operations,65734
+3,John Davis,59,Busan,Engineering,38897
+4,Joseph Lopez,21,Suwon,Finance,110975
+5,Joseph Wilson,23,Gwangju,Finance,86903
+1,James Rodriguez,28,Daegu,Finance,110921
+2,Mary Anderson,23,Chicago,R&D,107272
+3,Elizabeth Hernandez,25,New York,Sales,43450
+4,David Miller,32,Incheon,Finance,62911
+5,Jessica Miller,32,Busan,Marketing,90246
+1,Linda Gonzalez,25,London,Finance,65763
+2,Linda Wilson,50,London,Sales,56723
+3,James Miller,41,New York,Operations,81218
+4,Barbara Miller,49,New York,R&D,119926
+5,Patricia Anderson,35,Busan,Finance,70398
