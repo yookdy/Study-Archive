@@ -1,0 +1,17 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "- 규칙 -  1. 모든 코드는 복붙 안됨 2. 처음 코드를 짠다고 생각을 하고 순서를 고려하면서 코드 작성 3. 제미나이에서 알려준 코드 설명 말고 내말로 풀어서 코드 분석 4. 하루에 하나정도는 작성을 해보기",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^18.0.1",
+    "mysql2": "^3.24.4"
+  }
+}
