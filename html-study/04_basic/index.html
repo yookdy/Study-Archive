@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang = "ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content  = "width=devuce-width, initial-scale = 1.0">
+    <title>입력 폼 연습</title>
+    <style>
+       body{
+            font-family: sans-serif;
+            margin: 0 auto;
+            padding: 0;
+            max-width: 800px;
+       }
+       .profile-header{
+            text-align: center;
+            margin-top: 30px;
+       }
+       .profile-image{
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #265485;
+       }
+       table{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+       }
+       caption{
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+       }
+       th, td{
+        border: 1px solid #ddd; 
+        padding: 12px; 
+        text-align: center;
+       }
+       th{
+        background-color: #265485;
+       }
+    </style>
+</head>
+<body>
+    <div class="profile-header">
+     <img src="profile.jpg" alt="프로필 사진" class="profile-image">
+     <h2>개발자 포토폴리오</h2>
+     <p>iOS 및 백엔드 개발에 관심이 많습니다.</p>
+    </div>
+    <table>
+        <caption>기술 스택</caption>
+        <thead>
+            <tr>
+                <th>분야</th>
+                <th>기술 / 언어</th>
+                <th>활용도</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>iOS (모바일)</td>
+                <td>Swift, SwiftUI</td>
+                <td>프로젝트 경험</td>
+            </tr>
+            <tr>
+                <td>백엔드</td>
+                <td>Java, Spring Boot</td>
+                <td>서버 구축</td>
+            </tr>
+            <tr>
+                <td>기본 언어</td>
+                <td>C, Python</td>
+                <td>알고리즘 및 전공</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
