@@ -10,6 +10,7 @@ def pratice_embedding():
     # 각 단어를 4개의 실수(embedding_dim)로 이루어진 벡터로 표현합니다.
     vocab_size = 10
     embedding_dim = 5
+    # 10행 5열 임의의 가중치 행렬 생성
     embedding_layer = nn.Embedding(num_embeddings=vocab_size, embedding_dim = embedding_dim)
 
     print("1. 임베딩 계층 내부의 가중치 행렬 (Lookup Table):")
