@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 접이식 UI와 텍스트 서식</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+        
+        /* 아코디언(details) 스타일 */
+        details {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+        }
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+        }
+        details[open] summary {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+            color: #007bff;
+        }
+        
+        /* 단축키 및 인용구 스타일 */
+        kbd {
+            background-color: #eee;
+            border: 1px solid #b4b4b4;
+            border-radius: 3px;
+            padding: 2px 5px;
+            font-size: 0.9em;
+            font-family: monospace;
+        }
+        blockquote {
+            border-left: 4px solid #007bff;
+            margin: 15px 0;
+            padding: 10px 15px;
+            background-color: #f1f7ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>자주 묻는 질문 (FAQ) 및 서식</h1>
+    <p>자바스크립트 없이 순수 HTML 태그만으로 구현한 <mark>접이식 메뉴</mark>입니다.</p>
+
+    <!-- 클릭하면 열리고 닫히는 아코디언 메뉴 -->
+    <details open>
+        <summary>Q1. HTML과 CSS의 역할 차이는 무엇인가요?</summary>
+        <p>HTML은 웹페이지의 <strong>구조와 내용(뼈대)</strong>을 담당하고, CSS는 색상, 배치, 글꼴 등 <em>시각적인 디자인</em>을 담당합니다.</p>
+    </details>
+
+    <details>
+        <summary>Q2. 파일 저장 단축키는 무엇인가요?</summary>
+        <p>macOS 환경에서는 <kbd>Cmd</kbd> + <kbd>S</kbd>를 눌러 작성한 코드를 빠르게 저장할 수 있습니다.</p>
+    </details>
+
+    <details>
+        <summary>Q3. 가격 할인이나 수정된 내용은 어떻게 표시하나요?</summary>
+        <p>기존 가격 <del>30,000원</del>에서 <ins>15,000원</ins>으로 할인되었습니다.</p>
+    </details>
+
+    <blockquote>
+        "좋은 코드는 그 자체로 최고의 문서다." — 스티브 맥코넬
+    </blockquote>
+</body>
+</html>
