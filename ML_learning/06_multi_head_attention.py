@@ -22,7 +22,7 @@ class MultiHeadAttention(nn.Module):
 
         self.out_linear = nn.Linear(embed_dim, embed_dim)
 
-    def forward(self, x):
+    def forward(self, x): #행렬 곱셈을 통해 Q, K, V를 계산하고, 어텐션 스코어를 구한 후, 소프트맥스를 적용하여 가중치를 계산하고, 최종적으로 컨텍스트 벡터를 생성합니다.
         batch_size, seq_len, _ = x.shape # x.shape: 입력 텐서 x의 크기 -> 먼저 형식을 지정하는 역활
 
         #가중치 행렬이 곱해서 [1,3,8]로 만듬
