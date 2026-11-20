@@ -163,3 +163,33 @@ Day 1에서 생성한 정수형 토큰 ID를 인공신경망이 연산할 수 �
 2. **헤드 분할 (Split Heads):** `.view()`와 `.transpose()`를 조합해 `[1, 3, 8]` 텐서를 `[1, 2(헤드), 3(단어), 4(헤드차원)]` 형태로 변환하여 독립된 연산 공간 확보
 3. **병렬 어텐션 연산:** 각 헤드별로 독립적인 `Q @ K^T` 계산 및 $\sqrt{d_k}$ 스케일링, `Softmax` 적용 후 `V`와 곱하여 헤드별 문맥 벡터 도출
 4. **헤드 병합 (Concat) 및 최종 출력:** `.transpose()`와 `.contiguous().view()`로 헤드들을 다시 `[1, 3, 8]`로 합친 뒤, 최종 `out_linear` 계층을 통과시켜 정보를 융합한 최종 결과 반환
+
+
+
+### 07_transformer_block
+
+**코드 설명 및 목적**
+* **목적성:** 06번에서 만든 멀티 헤드 어텐션에 **잔차 연결(Residual Connection), 층 정규화(LayerNorm), 피드포워드 신경망(FFN)**을 결합하여, 실제 LLM(GPT 등)이 수십 층씩 쌓아 올리는 **완전한 트랜스포머 기본 블록(Transformer Block) 하나를 완성하는 것**을 목적으로 합니다. 간단하게 설명하면 06번에서의 단어연관성에 대해서 추가적으로 연관성을 높이고 압축을 하는 코드
+* **구현 내용:** 어텐션으로 문맥을 파악한 뒤 원본 정보를 보존하며 정규화(`Add & Norm`)하고, 이어서 차원을 4배 확장했다가 복원하는 `FeedForward` 신경망을 통과시켜 각 단어의 표현력을 심화시키는 전체 블록 구조를 파이토치로 구현했습니다.
+
+
+**사용된 문법**
+* `nn.LayerNorm()`, `nn.Sequential()` (층 정규화 및 계층 순차 조립)
+* 잔차 연결 (`x + attn_out`, `x + ffn_out`)
+
+**트랜스포머 블록 구성 요소의 역할**
+* **잔차 연결 (`x + ...`):** 어텐션이나 신경망을 거치며 원래 단어의 고유 의미가 희석되는 것을 방지하고, 역전파 시 기울기 소실 문제를 해결합니다.
+* **층 정규화 (`LayerNorm`):** 각 단어 벡터의 수치 스케일을 일정하게 맞춰 학습 속도와 안정성을 높입니다.
+* **피드포워드 신경망 (`FeedForward`):** 어텐션이 단어 간의 관계를 섞어주었다면, FFN은 각 단어 벡터의 차원을 4배(`8 -> 32 -> 8`)로 넓혔다 줄이며 비선형적 특징을 추출해 모델의 지능(표현력)을 높입니다.
+
+**수식적 연산 흐름 (Mathematical Flow)**
+$$X \xrightarrow{\text{MHA}} \text{AttnOut} \xrightarrow{+X,\ \text{Norm}_1} X_{\text{mid}} \xrightarrow{\text{FFN (8}\to\text{32}\to\text{8)}} \text{FFNOut} \xrightarrow{+X_{\text{mid}},\ \text{Norm}_2} \text{Output}$$
+
+* **$X_{\text{mid}} = \text{LayerNorm}_1(X + \text{MHA}(X))$**: 어텐션 결과에 원본 입력 $X$를 더한 뒤 평균 0, 분산 1로 표준화
+* $\text{Output} = \text{LayerNorm}_2(X_{\text{mid}} + \text{FFN}(X_{\text{mid}}))$: 4배 확장 및 `ReLU` 압축을 거친 FFN 결과에 $X_{\text{mid}}$를 다시 더하고 표준화하여 최종 출력 생성
+
+**실행 순서도 (Data Flow)**
+1. **멀티 헤드 어텐션:** 입력 텐서 `[1, 3, 8]`이 `MultiHeadAttention`을 통과해 문맥 벡터(`attn_out`) 산출
+2. **첫 번째 Add & Norm:** 원본 입력 `x`와 `attn_out`을 더한 뒤(`x + attn_out`), `nn.LayerNorm`으로 정규화 수행
+3. **피드포워드 신경망 (FFN):** 정규화된 `[1, 3, 8]` 텐서를 `[1, 3, 32]`로 확장 후 `ReLU`를 적용하고 다시 `[1, 3, 8]`로 압축
+4. **두 번째 Add & Norm:** FFN 입력값 `x`와 출력값 `ffn_out`을 더하고 다시 `nn.LayerNorm`을 거쳐 최종 `[1, 3, 8]` 텐서 반환
