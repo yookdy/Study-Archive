@@ -41,6 +41,13 @@
 * `math.sqrt(x)`: 제곱근($\sqrt{x}$)을 계산하는 파이썬 표준 수학 모듈 함수로, 어텐션 스코어가 너무 커져 기울기가 소실되는 것을 막는 스케일링($\sqrt{d_k}$)에 사용됩니다.
 * `torch.randn(shape)`: 평균이 0이고 표준편차가 1인 정규분포(가우시안 분포)를 따르는 무작위 난수 텐서를 생성합니다.
 
+
+---
+* `nn.ModuleList(modules)`: 여러 개의 신경망 계층(`TransformerBlock` 등)을 파이썬 리스트처럼 담아 관리하면서도, 파이토치가 내부 가중치 파라미터들을 정상적으로 인식하고 학습할 수 있게 등록해 주는 컨테이너입니다.
+* `torch.arange(start, end)`: `start`부터 `end - 1`까지 1씩 증가하는 1차원 정수 텐서를 생성합니다. (단어의 위치 인덱스를 만들 때 주로 사용됩니다.)
+* `tensor.unsqueeze(dim)`: 지정한 `dim` 위치에 크기가 1인 새로운 차원을 추가하여 텐서의 차원 수를 늘립니다. (예: `[3]` $\rightarrow$ `[1, 3]`)
+* `torch.argmax(tensor, dim)`: 지정한 차원을 기준으로 텐서 내에서 가장 큰 값이 위치한 인덱스(번호)를 반환합니다. (예측 확률이 가장 높은 최종 토큰 ID를 뽑을 때 사용합니다.)
+
 ### 01_simple_Tokenizer
 
 **코드 설명**
@@ -193,3 +200,33 @@ $$X \xrightarrow{\text{MHA}} \text{AttnOut} \xrightarrow{+X,\ \text{Norm}_1} X_{
 2. **첫 번째 Add & Norm:** 원본 입력 `x`와 `attn_out`을 더한 뒤(`x + attn_out`), `nn.LayerNorm`으로 정규화 수행
 3. **피드포워드 신경망 (FFN):** 정규화된 `[1, 3, 8]` 텐서를 `[1, 3, 32]`로 확장 후 `ReLU`를 적용하고 다시 `[1, 3, 8]`로 압축
 4. **두 번째 Add & Norm:** FFN 입력값 `x`와 출력값 `ffn_out`을 더하고 다시 `nn.LayerNorm`을 거쳐 최종 `[1, 3, 8]` 텐서 반환
+
+
+
+### 08_mini_gpt_model
+
+**코드 설명 및 목적**
+* **목적성:** 지금까지 개별적으로 구현한 **단어 임베딩(04번), 멀티 헤드 어텐션(06번), 트랜스포머 블록(07번)**에 **위치 임베딩(Positional Embedding)**과 **최종 언어 모델 예측 헤드(`lm_head`)**를 결합하여, **정수 토큰 배열을 입력받아 다음 단어를 예측하는 완전한 미니 GPT(LLM) 아키텍처의 전체 추론 파이프라인을 완성하는 것**을 목적으로 합니다.
+* **구현 내용:** 문장 내 단어의 순서 정보를 주입하기 위해 `position_embedding`을 더하고, `nn.ModuleList`로 여러 층의 `TransformerBlock`을 쌓아 통과시킨 뒤, 마지막 토큰 위치의 출력 벡터를 단어 사전 크기(`vocab_size`)로 투영하여 다음 토큰의 확률 분포와 최종 예측 ID를 산출했습니다.
+
+**사용된 문법**
+* `nn.ModuleList()`, `nn.Embedding()`, `nn.Linear()` (블록 적층, 위치 임베딩 및 출력 투영)
+* `torch.arange()`, `tensor.unsqueeze()`, `torch.argmax()` (위치 인덱스 생성 및 최고 확률 토큰 추출)
+
+**미니 GPT 핵심 추가 요소의 역할**
+* **위치 임베딩 (`position_embedding`):** 모든 단어를 동시에 병렬 처리하는 트랜스포머에게 각 단어가 문장의 몇 번째 위치에 있는지 알려주어 어순과 문맥을 구분하게 합니다.
+* **트랜스포머 블록 스택 (`nn.ModuleList`):** 단일 블록을 여러 층(`num_layers`) 위로 쌓아 올려 저수준 문법부터 고수준 문맥 추론까지 단계적으로 깊게 처리합니다.
+* **언어 모델 헤드 (`lm_head`):** 임베딩 차원(`8`)의 추상적인 벡터를 실제 단어 사전 크기(`10`)의 점수(Logits)로 변환하여, 다음에 등장할 가장 유력한 단어를 선택하게 해줍니다.
+
+**수식적 연산 흐름 (Mathematical Flow)**
+$$H_0 = E_{\text{token}}(X) + E_{\text{pos}}(P) \xrightarrow{\text{Block}_1 \dots \text{Block}_L} H_L \xrightarrow{\text{Norm},\ W_{\text{vocab}}} \text{Logits} \xrightarrow{\text{Softmax},\ \text{argmax}} \hat{y}_{\text{next}}$$
+
+* **$H_0 = E_{\text{token}}(X) + E_{\text{pos}}(P)$**: 입력 토큰 ID의 의미 임베딩(`[1, 3, 8]`)에 위치 인덱스(`0, 1, 2`)의 위치 임베딩(`[1, 3, 8]`)을 더해 초기 입력 텐서 생성
+* **$\text{Logits} = \text{LayerNorm}(H_L)W_{\text{vocab}} + b$**: $L$개의 트랜스포머 블록을 통과한 출력(`H_L`)을 단어 사전 크기(`vocab_size`)로 투영하여 각 단어별 점수 산출
+* **$\hat{y}_{\text{next}} = \arg\max(\text{Softmax}(\text{Logits}_{t=-1}))$**: 마지막 토큰 위치(`t=-1`)의 점수를 확률 분포로 변환한 뒤 최고 확률을 가진 다음 토큰 ID 예측
+
+**실행 순서도 (Data Flow)**
+1. **임베딩 및 위치 결합:** 정수 토큰 텐서 `[1, 3]`에 대해 단어 임베딩과 `torch.arange`로 생성한 위치 임베딩을 더해 `[1, 3, 8]` 텐서 생성
+2. **트랜스포머 블록 순차 통과:** `nn.ModuleList`에 담긴 2개 층의 `TransformerBlock`을 차례로 통과하며 문맥과 추론 정보 심화
+3. **최종 정규화 및 Logits 산출:** `final_norm`과 `lm_head`를 거쳐 `[1, 3, 8]` 텐서를 전체 단어 사전 크기인 `[1, 3, 10]` 점수(Logits)로 변환
+4. **다음 단어 예측:** 마지막 단어 위치(`[:, -1, :]`)의 점수에 `Softmax`와 `argmax`를 적용하여 가장 확률이 높은 다음 토큰 ID 도출
