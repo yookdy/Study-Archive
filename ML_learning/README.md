@@ -48,6 +48,13 @@
 * `tensor.unsqueeze(dim)`: 지정한 `dim` 위치에 크기가 1인 새로운 차원을 추가하여 텐서의 차원 수를 늘립니다. (예: `[3]` $\rightarrow$ `[1, 3]`)
 * `torch.argmax(tensor, dim)`: 지정한 차원을 기준으로 텐서 내에서 가장 큰 값이 위치한 인덱스(번호)를 반환합니다. (예측 확률이 가장 높은 최종 토큰 ID를 뽑을 때 사용합니다.)
 
+---
+* `torch.tril(tensor)`: 행렬의 주대각선을 기준으로 아래쪽 삼각형(Lower Triangle) 원소만 남기고 위쪽 삼각형은 모두 `0`으로 만드는 함수입니다. (미래 단어를 가리는 인과적 마스크 생성에 사용됩니다.)
+* `tensor.masked_fill(mask, value)`: `mask` 조건이 참(`True`)인 위치의 텐서 값을 지정한 `value`(예: `float("-inf")`)로 덮어씁니다.
+* `self.register_buffer("name", tensor)`: 모델의 학습 대상(가중치)은 아니지만, 모델 내부에 고정된 상수 텐서(마스크 등)를 등록하여 GPU 이동이나 저장 시 함께 관리되도록 하는 메서드입니다.
+* `@torch.no_grad()`: 추론(생성) 단계에서 불필요한 기울기(Gradient) 계산을 비활성화하여 메모리 사용량을 줄이고 실행 속도를 높이는 데코레이터입니다.
+* `torch.cat((t1, t2), dim)`: 두 개 이상의 텐서를 지정한 차원(`dim`) 방향으로 하나로 이어 붙입니다(Concatenate).
+
 ### 01_simple_Tokenizer
 
 **코드 설명**
@@ -230,3 +237,32 @@ $$H_0 = E_{\text{token}}(X) + E_{\text{pos}}(P) \xrightarrow{\text{Block}_1 \dot
 2. **트랜스포머 블록 순차 통과:** `nn.ModuleList`에 담긴 2개 층의 `TransformerBlock`을 차례로 통과하며 문맥과 추론 정보 심화
 3. **최종 정규화 및 Logits 산출:** `final_norm`과 `lm_head`를 거쳐 `[1, 3, 8]` 텐서를 전체 단어 사전 크기인 `[1, 3, 10]` 점수(Logits)로 변환
 4. **다음 단어 예측:** 마지막 단어 위치(`[:, -1, :]`)의 점수에 `Softmax`와 `argmax`를 적용하여 가장 확률이 높은 다음 토큰 ID 도출
+
+
+
+### 09_causal_self_attention_gpt
+
+**코드 설명 및 목적**
+* **목적성:** 08번에서 구현한 미니 GPT에 **인과적 마스킹(Causal Masking)**과 **자기회귀 생성 루프(`generate`)**를 추가하여, **현재 단어가 미래에 나올 단어를 미리 훔쳐보지 못하도록 차단하고 예측한 단어를 다시 입력에 붙여 문장을 연속적으로 생성하는 실제 GPT의 핵심 동작 원리를 구현하는 것**을 목적으로 합니다.
+* **구현 내용:** `torch.tril`로 하삼각 마스크를 생성하고 `masked_fill`을 통해 미래 토큰의 어텐션 점수를 $-\infty$로 변환하여 `Softmax` 확률이 `0`이 되도록 설계했으며, `torch.cat`을 활용해 새 토큰을 한 개씩 반복 생성하는 `generate` 메서드를 완성했습니다.
+
+**사용된 문법**
+* `torch.tril()`, `tensor.masked_fill()`, `self.register_buffer()` (인과적 마스크 생성 및 적용)
+* `@torch.no_grad()`, `torch.cat()` (추론 최적화 및 자기회귀 토큰 연결)
+
+**인과적 어텐션 및 자기회귀 생성의 역할**
+* **인과적 마스크 (`Causal Mask`):** 문장을 왼쪽에서 오른쪽으로 순차 생성할 때, $t$번째 단어가 $t+1$번째 이후의 미래 단어 정보를 참조하지 못하게 막아 실제 언어 생성 환경과 동일한 조건을 강제합니다.
+* **자기회귀 생성 (`Autoregressive Generation`):** 모델이 예측한 다음 토큰을 기존 입력 시퀀스 끝에 이어 붙인 뒤 다시 모델에 입력하는 과정을 반복하여, 단 한 번의 예측이 아닌 연속된 문장을 만들어냅니다.
+
+**수식적 연산 흐름 (Mathematical Flow)**
+$$\text{Attention}_{\text{causal}}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}} + M\right)V, \quad M_{ij} = \begin{cases} 0 & (i \ge j) \\ -\infty & (i < j) \end{cases}$$
+
+$$X_{1:t} \xrightarrow{\text{CausalMiniGPT}} \hat{y}_{t+1} \implies X_{1:t+1} = [X_{1:t} \parallel \hat{y}_{t+1}] \quad (\text{반복 생성})$$
+
+* **마스크 덧셈 ($+ M$)**: 현재 위치($i$)보다 뒤에 있는 미래 위치($j > i$)에 $-\infty$를 더해 `Softmax` 통과 후 가중치가 정확히 $e^{-\infty} = 0$이 되도록 처리
+* **자기회귀 연결 ($[X_{1:t} \parallel \hat{y}_{t+1}]$)**: 예측된 토큰 $\hat{y}_{t+1}$을 기존 시퀀스 뒤에 `torch.cat`으로 결합해 다음 스텝의 입력으로 재투입
+
+**실행 순서도 (Data Flow)**
+1. **하삼각 마스크 준비:** `__init__` 단계에서 `torch.tril`로 하삼각 행렬을 생성해 `register_buffer`로 고정 등록
+2. **미래 정보 차단 (`masked_fill`):** 어텐션 스코어 계산 직후 마스크가 `0`인 상삼각(미래 위치) 영역을 `-inf`로 치환하여 `Softmax` 확률을 `0`으로 차단
+3. **자기회귀 생성 루프 (`generate`):** 초기 토큰 `[1, 4, 7]`을 모델에 넣어 다음 토큰을 예측하고, `torch.cat`으로 뒤에 이어 붙이는 과정을 `max_new_tokens`(4회)만큼 반복하여 총 7개 길이의 시퀀스 출력
